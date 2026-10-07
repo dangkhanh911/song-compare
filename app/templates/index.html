@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Compare</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page">
+        <!-- ================= HEADER ================= -->
+        <header class="topbar">
+            <div class="status">
+                <span class="status-dot"></span>
+                <!-- <strong>Music compare</strong> -->
+                <button class="compare-btn" onclick="compareSong(songs[0], songs[1])">Compare</button>
+                <span class="divider"></span>
+                <span class="muted">Based on Youtube Music data</span>
+                
+            </div>
+        </header>
+
+        <!-- ================= SONG COMPARISON ================= -->
+        <section class="comparison">
+            <!-- SONG ONE -->
+            <div class="song-panel">
+                <div class="panel-header">
+                    <span>SONG ONE</span>
+                    <button class="change-btn" onclick="searchSong(0)">Change song</button>
+                </div>
+
+                <div class="song-content">
+                    <div class="cover-wrapper">
+                        <img
+                            class="cover"
+                            src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600"
+                            alt="Song cover"
+                        >
+
+                        <button
+                            id="playPauseButton"
+                            class="play-button"
+                            onclick="togglePlayPause(this, 0)"
+                        >
+                            ▶
+                        </button>
+                    </div>
+
+
+                    <div class="song-info">
+                        <div class="artist-label">AFTERGLOW · 2025</div>
+                        <h1>Midnight Drive</h1>
+                        <p class="artist">Maya Lune</p>
+
+                        <div class="song-meta">
+                            <span>◷ &nbsp;3:42 </span>
+                            <span>118 BPM</span>
+                            <span>F minor</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- SWAP BUTTON -->
+
+            <!-- <button class="swap-button">
+                ⇄
+            </button> -->
+
+
+            <!-- SONG TWO -->
+
+            <div class="song-panel">
+                <div class="panel-header">
+                    <span>SONG TWO</span>
+                    <button class="change-btn" onclick="searchSong(1)">Change song</button>
+                </div>
+
+                <div class="song-content">
+                    <div class="cover-wrapper">
+                        <img
+                            class="cover"
+                            src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=600"
+                            alt="Song cover"
+                        >
+
+                        <button
+                            id="playPauseButton"
+                            class="play-button"
+                            onclick="togglePlayPause(this, 1)"
+                        >
+                            ▶
+                        </button>
+                    </div>
+
+                    <div class="song-info">
+                        <div class="artist-label">OPEN WINDOWS · 2024</div>
+                        <h1>Better in Blue</h1>
+                        <p class="artist">Noah Vale</p>
+
+                        <div class="song-meta">
+                            <span> ◷ &nbsp;3:18</span>
+                            <span>104 BPM</span>
+                            <span>A major</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= MATCH SUMMARY ================= -->
+
+        <section class="match-summary">
+            <div class="score">
+                <strong>78<span>%</span></strong>
+                <label>SOUND MATCH</label>
+            </div>
+
+            <div class="summary-text">
+                These songs share a
+                <strong>notable sonic connection</strong>,
+                especially in rhythm and mood.
+            </div>
+
+            <button class="compare-btn">
+                Compare another pair
+                <span>›</span>
+            </button>
+        </section>
+
+
+        <!-- ================= CHARACTERISTICS ================= -->
+
+        <section class="characteristics">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">SIDE BY SIDE</div>
+                    <h2>Audio characteristics</h2>
+                </div>
+
+                <div class="legend">
+                    <span>
+                        <i class="legend-red"></i>
+                        Midnight Drive
+                    </span>
+
+                    <span>
+                        <i class="legend-blue"></i>
+                        Better in Blue
+                    </span>
+                </div>
+            </div>
+
+            <div class="chart">
+                <!-- ENERGY -->
+                <div class="metric">
+                    <div class="metric-name">Energy</div>
+
+                    <div class="metric-value left">86</div>
+                    <div class="bar-area">
+                        <div class="bar-track left-track">
+                            <div class="bar red" style="width: 86%;"></div>
+                        </div>
+
+                        <div class="bar-track right-track">
+                            <div class="bar blue" style="width: 72%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-value right">72</div>
+                </div>
+
+                <!-- DANCEABILITY -->
+                <div class="metric">
+                    <div class="metric-name">Danceability</div>
+                    
+                    <div class="metric-value left">74</div>
+                    <div class="bar-area">
+                        <div class="bar-track left-track">
+                            <div class="bar red" style="width: 74%;"></div>
+                        </div>
+
+                        <div class="bar-track right-track">
+                            <div class="bar blue" style="width: 81%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-value right">81</div>
+                </div>
+
+                <!-- POSITIVITY -->
+                <div class="metric">
+                    <div class="metric-name">Positivity</div>
+
+                    <div class="metric-value left">61</div>
+                    <div class="bar-area">
+                        <div class="bar-track left-track">
+                            <div class="bar red" style="width: 61%;"></div>
+                        </div>
+
+                        <div class="bar-track right-track">
+                            <div class="bar blue" style="width: 78%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-value right">78</div>
+                </div>
+
+                <!-- ACOUSTICNESS -->
+
+                <div class="metric">
+
+                    <div class="metric-name">
+                        Acousticness
+                    </div>
+
+                    <div class="metric-value left">
+                        18
+                    </div>
+
+                    <div class="bar-area">
+
+                        <div class="bar-track left-track">
+
+                            <div
+                                class="bar red"
+                                style="width: 18%;"
+                            ></div>
+
+                        </div>
+
+                        <div class="bar-track right-track">
+
+                            <div
+                                class="bar blue"
+                                style="width: 27%;"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="metric-value right">
+                        27
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= INSIGHTS ================= -->
+
+            <!-- <div class="insights">
+
+                <div class="insight-card">
+
+                    <div class="insight-number">
+                        01
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Maya Lune hits harder
+                        </h3>
+
+                        <p>
+                            Midnight Drive carries more energy,
+                            with a faster pace and a denser
+                            electronic production.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="insight-card">
+
+                    <div class="insight-number">
+                        02
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Better in Blue feels brighter
+                        </h3>
+
+                        <p>
+                            A higher positivity score and major
+                            tonality give it a warmer, more open
+                            emotional profile.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="insight-card">
+
+                    <div class="insight-number">
+                        03
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Built for the same playlist
+                        </h3>
+
+                        <p>
+                            Both tracks have a danceable pulse
+                            and sit comfortably in an alt-pop,
+                            late-night mix.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section> -->
+
+
+        <!-- ================= HIDDEN YOUTUBE PLAYER ================= -->
+
+        <div id="youtube-player"></div>
+
+    </div>
+    
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="../static/app.js"></script>
+</body>
+</html>

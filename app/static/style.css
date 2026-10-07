@@ -1,0 +1,817 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    background: #0b0b0d;
+
+    color: #f5f5f7;
+
+    font-family: "Inter", Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+}
+
+button {
+    font-family: inherit;
+}
+
+.page {
+    width: min(1580px, calc(100% - 80px));
+    margin: 28px auto 80px;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+    height: 86px;
+
+    padding: 0 32px;
+
+    border: 1px solid #2b2b30;
+
+    border-radius: 26px 26px 0 0;
+
+    background: #151518;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+.status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-size: 14px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #62d99a;
+
+    box-shadow: 0 0 12px rgba(98, 217, 154, .5);
+}
+
+.divider {
+    width: 1px;
+    height: 22px;
+
+    background: #39393e;
+
+    margin: 0 4px;
+}
+
+.muted {
+    color: #75757f;
+}
+
+.save-btn {
+    border: 0;
+
+    background: transparent;
+
+    color: #9999a3;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.save-btn:hover {
+    color: white;
+}
+
+.plus {
+    font-size: 25px;
+    font-weight: 300;
+}
+
+
+/* =========================================================
+   COMPARISON
+========================================================= */
+
+.comparison {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    border-left: 1px solid #2b2b30;
+    border-right: 1px solid #2b2b30;
+    border-bottom: 1px solid #2b2b30;
+
+    background: #101013;
+}
+
+.song-panel {
+    min-height: 360px;
+
+    padding: 44px 42px;
+}
+
+.song-panel:first-child {
+    border-right: 1px solid #29292e;
+}
+
+.panel-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 32px;
+
+    color: #6e6e78;
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+}
+
+.change-btn {
+    border: 0;
+
+    background: transparent;
+
+    color: #9999a3;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    letter-spacing: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.change-btn:hover {
+    color: white;
+}
+
+.song-content {
+    display: flex;
+
+    align-items: center;
+
+    gap: 38px;
+}
+
+.cover-wrapper {
+    position: relative;
+
+    flex-shrink: 0;
+}
+
+.cover {
+    width: 225px;
+    height: 225px;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 17px;
+
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, .4);
+}
+
+.play-button {
+    position: absolute;
+
+    bottom: 17px;
+    left: 17px;
+
+    width: 60px;
+    height: 60px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f7f7f7;
+
+    color: #101013;
+
+    font-size: 23px;
+
+    cursor: pointer;
+
+    padding-left: 5px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, .35);
+
+    transition: transform .15s ease;
+}
+
+.play-button:hover {
+    transform: scale(1.08);
+}
+
+.song-info {
+    min-width: 0;
+}
+
+.artist-label {
+    color: #ff655b;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.4px;
+
+    margin-bottom: 20px;
+}
+
+.song-info h1 {
+    margin: 0;
+
+    color: #fafafa;
+
+    font-size: clamp(32px, 3vw, 48px);
+
+    line-height: 1.05;
+
+    letter-spacing: -2px;
+}
+
+.artist {
+    color: #aaaab2;
+
+    margin: 10px 0 32px;
+
+    font-size: 19px;
+}
+
+.song-meta {
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+.song-meta span {
+    border: 1px solid #303037;
+
+    border-radius: 7px;
+
+    padding: 9px 13px;
+
+    color: #85858f;
+
+    font-size: 11px;
+}
+
+.swap-button {
+    position: absolute;
+
+    z-index: 5;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 60px;
+    height: 60px;
+
+    border: 1px solid #38383f;
+
+    border-radius: 50%;
+
+    background: #1b1b1f;
+
+    color: #92929c;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    box-shadow: 0 5px 25px rgba(0, 0, 0, .3);
+}
+
+.swap-button:hover {
+    color: white;
+
+    background: #25252a;
+}
+
+
+/* =========================================================
+   MATCH SUMMARY
+========================================================= */
+
+.match-summary {
+    min-height: 145px;
+
+    padding: 32px 60px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 34px;
+
+    border-left: 1px solid #2b2b30;
+    border-right: 1px solid #2b2b30;
+    border-bottom: 1px solid #2b2b30;
+
+    background: #17171a;
+}
+
+.score {
+    min-width: 165px;
+
+    padding-right: 35px;
+
+    border-right: 1px solid #36363c;
+}
+
+.score strong {
+    display: block;
+
+    color: #ff6258;
+
+    font-size: 43px;
+
+    letter-spacing: -2px;
+}
+
+.score strong span {
+    font-size: 20px;
+}
+
+.score label {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #777781;
+
+    font-size: 11px;
+
+    letter-spacing: 1.5px;
+}
+
+.summary-text {
+    max-width: 560px;
+
+    color: #777782;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+.summary-text strong {
+    color: #e5e5e8;
+}
+
+.compare-btn {
+    margin-left: auto;
+
+    border: 1px solid #35353b;
+
+    border-radius: 30px;
+
+    padding: 16px 25px;
+
+    background: transparent;
+
+    color: #e7e7e9;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 22px;
+}
+
+.compare-btn span {
+    font-size: 27px;
+
+    line-height: 0;
+}
+
+.compare-btn:hover {
+    background: #222227;
+}
+
+
+/* =========================================================
+   CHARACTERISTICS
+========================================================= */
+
+.characteristics {
+    margin-top: 55px;
+}
+
+.section-heading {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    margin-bottom: 40px;
+}
+
+.eyebrow {
+    color: #ff6258;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 22px;
+}
+
+.section-heading h2 {
+    margin: 0;
+
+    font-size: 38px;
+
+    letter-spacing: -1.5px;
+}
+
+.legend {
+    display: flex;
+
+    gap: 30px;
+
+    color: #777781;
+
+    font-size: 13px;
+}
+
+.legend span {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+.legend i {
+    display: inline-block;
+
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+}
+
+.legend-red {
+    background: #ff685e;
+}
+
+.legend-blue {
+    background: #72a0f3;
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+.chart {
+    padding: 38px 50px;
+
+    border: 1px solid #2c2c32;
+
+    border-radius: 20px;
+
+    background: #141417;
+}
+
+.metric {
+    display: grid;
+
+    grid-template-columns:
+        150px
+        45px
+        minmax(300px, 1fr)
+        45px;
+
+    align-items: center;
+
+    min-height: 53px;
+}
+
+.metric-name {
+    color: #8b8b96;
+
+    font-size: 14px;
+}
+
+.metric-value {
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.metric-value.left {
+    text-align: center;
+
+    color: #d9d9de;
+}
+
+.metric-value.right {
+    text-align: center;
+
+    color: #d9d9de;
+}
+
+.bar-area {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    height: 10px;
+
+    gap: 6px;
+}
+
+.bar-track {
+    height: 10px;
+
+    background: #29292e;
+
+    overflow: hidden;
+}
+
+.left-track {
+    border-radius: 8px 0 0 8px;
+
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+.right-track {
+    border-radius: 0 8px 8px 0;
+}
+
+.bar {
+    height: 100%;
+
+    border-radius: 8px;
+}
+
+.red {
+    background: #ff685e;
+}
+
+.blue {
+    background: #72a0f3;
+}
+
+
+/* =========================================================
+   INSIGHTS
+========================================================= */
+
+.insights {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-top: 18px;
+}
+
+.insight-card {
+    min-height: 180px;
+
+    padding: 35px 32px;
+
+    border: 1px solid #2c2c32;
+
+    border-radius: 18px;
+
+    background: #111114;
+
+    display: flex;
+
+    gap: 22px;
+}
+
+.insight-number {
+    color: #ff6258;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    flex-shrink: 0;
+}
+
+.insight-card h3 {
+    margin: 0 0 15px;
+
+    color: #f0f0f2;
+
+    font-size: 19px;
+
+    letter-spacing: -.5px;
+}
+
+.insight-card p {
+    margin: 0;
+
+    color: #73737d;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   YOUTUBE PLAYER
+========================================================= */
+
+#youtube-player {
+    position: fixed;
+
+    width: 1px;
+    height: 1px;
+
+    left: -9999px;
+
+    bottom: 0;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .page {
+        width: calc(100% - 30px);
+    }
+
+    .song-content {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .cover {
+        width: 190px;
+        height: 190px;
+    }
+
+    .insights {
+        grid-template-columns: 1fr;
+    }
+
+    .match-summary {
+        flex-wrap: wrap;
+    }
+
+    .compare-btn {
+        margin-left: 0;
+    }
+}
+
+
+@media (max-width: 750px) {
+
+    .topbar {
+        height: auto;
+
+        padding: 22px;
+
+        gap: 20px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .song-panel:first-child {
+        border-right: 0;
+
+        border-bottom: 1px solid #29292e;
+    }
+
+    .swap-button {
+        display: none;
+    }
+
+    .song-panel {
+        padding: 30px 24px;
+    }
+
+    .song-content {
+        flex-direction: row;
+    }
+
+    .cover {
+        width: 130px;
+        height: 130px;
+    }
+
+    .play-button {
+        width: 45px;
+        height: 45px;
+
+        bottom: 10px;
+        left: 10px;
+
+        font-size: 16px;
+    }
+
+    .song-info h1 {
+        font-size: 28px;
+    }
+
+    .artist {
+        font-size: 15px;
+
+        margin-bottom: 20px;
+    }
+
+    .match-summary {
+        padding: 30px;
+    }
+
+    .score {
+        border-right: 0;
+
+        padding-right: 0;
+    }
+
+    .section-heading {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 25px;
+    }
+
+    .chart {
+        padding: 25px 15px;
+    }
+
+    .metric {
+        grid-template-columns:
+            100px
+            30px
+            minmax(100px, 1fr)
+            30px;
+    }
+
+    .metric-name {
+        font-size: 11px;
+    }
+}
