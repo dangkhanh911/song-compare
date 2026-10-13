@@ -1,27 +1,18 @@
 from flask import Flask
+from flask_cors import CORS
+
+from flask import Flask
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)  # Enable CORS for the app
+
+    # Load configuration
     app.config.from_object('config')
 
-    with app.app_context():
-        from . import routes  # Import routes
-        return app
-    
-class song:
-    def __init__(self, name, artist, album, year):
-        self.name = name
-        self.artist = artist
-        self.album = album
-        self.year = year
+    # Register routes
+    from app.routes import main
+    app.register_blueprint(main)
 
-class album:
-    def __init__(self, name, artist, year):
-        self.name = name
-        self.artist = artist
-        self.year = year
-
-class artist:
-    def __init__(self, name, album):
-        self.name = name
-        self.album = album
+    return app

@@ -27,7 +27,6 @@ button {
     margin: 28px auto 80px;
 }
 
-
 /* =========================================================
    TOP BAR
 ========================================================= */
@@ -111,6 +110,26 @@ button {
     font-weight: 300;
 }
 
+.search-box {
+    position: relative;
+
+    width: 300px;
+    height: 40px;
+
+    border: 1px solid #2b2b30;
+
+    border-radius: 20px;
+
+    background: #101013;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 16px;
+
+    color: white;
+}
 
 /* =========================================================
    COMPARISON

@@ -18,7 +18,6 @@
                 <button class="compare-btn" onclick="compareSong(songs[0], songs[1])">Compare</button>
                 <span class="divider"></span>
                 <span class="muted">Based on Youtube Music data</span>
-                
             </div>
         </header>
 
@@ -28,7 +27,8 @@
             <div class="song-panel">
                 <div class="panel-header">
                     <span>SONG ONE</span>
-                    <button class="change-btn" onclick="searchSong(0)">Change song</button>
+                    <input type="text" class="search-box" id="song0TextInput" placeholder="What you wanna hear?" />
+                    <button class="change-btn" onclick="searchSong(0)">Search</button>
                 </div>
 
                 <div class="song-content">
@@ -50,7 +50,7 @@
 
 
                     <div class="song-info">
-                        <div class="artist-label">AFTERGLOW · 2025</div>
+                        <div class="artist-label" id="album_0"></div>
                         <h1>Midnight Drive</h1>
                         <p class="artist">Maya Lune</p>
 
@@ -76,7 +76,8 @@
             <div class="song-panel">
                 <div class="panel-header">
                     <span>SONG TWO</span>
-                    <button class="change-btn" onclick="searchSong(1)">Change song</button>
+                    <input type="text" class="search-box" id="song1TextInput" placeholder="What you wanna hear?" />
+                    <button class="change-btn" onclick="searchSong(1)">Search</button>
                 </div>
 
                 <div class="song-content">
@@ -329,7 +330,7 @@
 
         <!-- ================= HIDDEN YOUTUBE PLAYER ================= -->
 
-        <div id="youtube-player"></div>
+        <div id="youtube-player" onclick="onYouTubeIframeAPIReady()"></div>
 
     </div>
     
