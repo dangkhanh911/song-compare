@@ -15,103 +15,14 @@
             <div class="status">
                 <span class="status-dot"></span>
                 <!-- <strong>Music compare</strong> -->
-                <button class="compare-btn" onclick="compareSong(songs[0], songs[1])">Compare</button>
+                <button class="compare-btn" onclick="sendSongsToBackend()">Compare</button>
                 <span class="divider"></span>
                 <span class="muted">Based on Youtube Music data</span>
             </div>
         </header>
 
         <!-- ================= SONG COMPARISON ================= -->
-        <section class="comparison">
-            <!-- SONG ONE -->
-            <div class="song-panel">
-                <div class="panel-header">
-                    <span>SONG ONE</span>
-                    <input type="text" class="search-box" id="song0TextInput" placeholder="What you wanna hear?" />
-                    <button class="change-btn" onclick="searchSong(0)">Search</button>
-                </div>
-
-                <div class="song-content">
-                    <div class="cover-wrapper">
-                        <img
-                            class="cover"
-                            src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600"
-                            alt="Song cover"
-                        >
-
-                        <button
-                            id="playPauseButton"
-                            class="play-button"
-                            onclick="togglePlayPause(this, 0)"
-                        >
-                            ▶
-                        </button>
-                    </div>
-
-
-                    <div class="song-info">
-                        <div class="artist-label" id="album_0"></div>
-                        <h1>Midnight Drive</h1>
-                        <p class="artist">Maya Lune</p>
-
-                        <div class="song-meta">
-                            <span>◷ &nbsp;3:42 </span>
-                            <span>118 BPM</span>
-                            <span>F minor</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- SWAP BUTTON -->
-
-            <!-- <button class="swap-button">
-                ⇄
-            </button> -->
-
-
-            <!-- SONG TWO -->
-
-            <div class="song-panel">
-                <div class="panel-header">
-                    <span>SONG TWO</span>
-                    <input type="text" class="search-box" id="song1TextInput" placeholder="What you wanna hear?" />
-                    <button class="change-btn" onclick="searchSong(1)">Search</button>
-                </div>
-
-                <div class="song-content">
-                    <div class="cover-wrapper">
-                        <img
-                            class="cover"
-                            src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=600"
-                            alt="Song cover"
-                        >
-
-                        <button
-                            id="playPauseButton"
-                            class="play-button"
-                            onclick="togglePlayPause(this, 1)"
-                        >
-                            ▶
-                        </button>
-                    </div>
-
-                    <div class="song-info">
-                        <div class="artist-label">OPEN WINDOWS · 2024</div>
-                        <h1>Better in Blue</h1>
-                        <p class="artist">Noah Vale</p>
-
-                        <div class="song-meta">
-                            <span> ◷ &nbsp;3:18</span>
-                            <span>104 BPM</span>
-                            <span>A major</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+        <section class="comparison"></section>
 
         <!-- ================= MATCH SUMMARY ================= -->
 
@@ -128,7 +39,7 @@
             </div>
 
             <button class="compare-btn">
-                Compare another pair
+                Detail
                 <span>›</span>
             </button>
         </section>
