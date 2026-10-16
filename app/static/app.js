@@ -1,20 +1,38 @@
 let player = null;
 
 class Song {
-    constructor(index, title, youtubeId, artist, album, year) {
+    constructor(index, youtubeId) {
         this.index = index;
-        this.artist = artist;
-        this.album = album;
-        this.year = year;
-        this.title = title;
         this.youtubeId = youtubeId;
+        this.title = "Unknown Title";
+        this.artist = "Unknown Artist";
+        this.album = "Unknown Album";
+        this.year = "Unknown Year";
+        this.duration = null;
+    }
+
+    fetchDetails() {
+        fetch('http://127.0.0.1:5000/search/' + this.youtubeId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => console.log('Response from backend:', data))
+        .catch(error => console.error('Error:', error));
     }
 }
 
 let songs = [
-    new Song(0, "Midnight Drive", "EjTXTAiZPXs", "Artist 1", "Album 1", 2020),
-    new Song(1, "Better in Blue", "boKJ5XDs_mY", "Artist 2", "Album 2", 2021)
+    new Song(0, "EjTXTAiZPXs"),
+    new Song(1, "1k2mA7PUOc0")
 ];
+
+songs.forEach((song) => {
+    // Fetch song details from the backend
+    song.fetchDetails();
+})
 
 function sendSongsToBackend() {
     fetch('http://127.0.0.1:5000/songs', {
@@ -44,7 +62,7 @@ function loadSongs() {
             <div class="song-panel">
                 <div class="panel-header">
                     <span>FIND MUSIC</span>
-                    <input type="text" class="search-box" id="searchInput" placeholder="What you wanna hear?" />
+                    <input type="text" class="search-box" id="searchInput-${song.index}" placeholder="What you wanna hear?" />
                     <button class="change-btn" onclick="searchSong(${song.index})">Search</button>
                 </div>
 
@@ -72,7 +90,7 @@ function loadSongs() {
                         <p class="artist">${song.artist}</p>
 
                         <div class="song-meta">
-                            <span>◷ &nbsp;3:42 </span>
+                            <span>◷ &nbsp;${song.duration} </span>
                             <span>118 BPM</span>
                             <span>F minor</span>
                         </div>
@@ -89,26 +107,27 @@ function loadSongs() {
 // Call the function to load songs when the page loads
 window.onload = loadSongs;
 
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player("youtube-player", {
-        height: "1",
-        width: "1",
-        videoId: songs[0].youtubeId,
-        playerVars: {
-            autoplay: 0,
-            controls: 0
-        },
+// function onYouTubeIframeAPIReady() {
+//     player = new YT.Player("youtube-player", {
+//         height: "1",
+//         width: "1",
+//         videoId: songs[0].youtubeId,
+//         playerVars: {
+//             autoplay: 0,
+//             controls: 0
+//         },
 
-        events: {
-            onReady: function () {
-                console.log("YouTube player ready");
-            }
-        }
-    });
-}
+//         events: {
+//             onReady: function () {
+//                 console.log("YouTube player ready");
+//             }
+//         }
+//     });
+// }
 
 function searchSong(songIndex) {
-    let query = searchInput.value;
+    const searchInput = document.getElementById(`searchInput-${songIndex}`);
+    let query = searchInput.value.trim();
 
     const searchUrl = `https://music.youtube.com/search?q=${query}`;
     window.open(searchUrl, "videoWindow", "width=800,height=600");
