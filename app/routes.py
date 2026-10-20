@@ -2,12 +2,20 @@ from flask import render_template, request
 from flask import Blueprint, jsonify
 from app import Song, songs
 import subprocess
+import json
 
-main = Blueprint('main', __name__) # Create a Blueprint for the main routes
-    
+main = Blueprint('main', __name__)
+
+
 @main.route('/')
 def index():
     return render_template('index.html', songs=songs)
+
+
+@main.route('/search')
+def search():
+    return render_template('search.html', songs=songs)
+
 
 @main.route('/songs', methods=['POST'])
 def receive_songs():
@@ -20,15 +28,17 @@ def receive_songs():
     print("Updated songs:", songs[0].title)
     return jsonify({"message": "Songs received successfully!"})
 
-@main.route('/search/<youtube_id>', methods=["GET"])
+
+@main.route('/fetch/<youtube_id>', methods=["GET"])
 def get_song_metadata(youtube_id):
     # Validate YouTube video ID
-    if not youtube_id.replace("-", "").replace("_", "").isalnum() or len(youtube_id) != 11:
-        return jsonify({"error": "Invalid YouTube ID"}), 400
+    if not youtube_id or len(youtube_id) != 11:
+        return jsonify({"error": "Invalid YouTube video ID"}), 400
 
     url = f"https://music.youtube.com/watch?v={youtube_id}"
 
     try:
+        # Use yt-dlp to fetch metadata without downloading the video
         result = subprocess.run(
             [
                 "yt-dlp",
@@ -41,9 +51,10 @@ def get_song_metadata(youtube_id):
             capture_output=True,
             text=True,
             check=True,
-            timeout=30
+            timeout=10
         )
 
+        # Parse the JSON output from yt-dlp
         data = json.loads(result.stdout)
 
         artists = data.get("artists") or []
