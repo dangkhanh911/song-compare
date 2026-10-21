@@ -16,7 +16,7 @@ class Song {
 // Fetch song details from the backend for each song
 async function fetchSongDetails(song) {
     try {
-        await fetch('http://127.0.0.1:5000/fetch/' + song.youtubeId, {
+        await fetch('/fetch/' + song.youtubeId, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

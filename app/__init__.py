@@ -19,9 +19,6 @@ def create_app():
     app = Flask(__name__)
     CORS(app)  # Enable CORS for the app
 
-    # Load configuration
-    app.config.from_object('config')
-
     # Register routes
     from app.routes import main
     app.register_blueprint(main)
