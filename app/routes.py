@@ -1,8 +1,9 @@
-from flask import render_template, request
+from flask import render_template, request, send_file
 from flask import Blueprint, jsonify
 from app import Song, songs
 import subprocess
 import json
+import yt_dlp
 
 main = Blueprint('main', __name__)
 
@@ -78,3 +79,97 @@ def get_song_metadata(youtube_id):
         return jsonify({"error": "Metadata request timed out"}), 504
     except subprocess.CalledProcessError:
         return jsonify({"error": "Could not retrieve YouTube metadata"}), 502
+
+
+@main.route('/download/<youtube_id>', methods=["GET"])
+def download_song(youtube_id):
+    # Validate YouTube video ID
+    if not youtube_id or len(youtube_id) != 11:
+        return jsonify({"error": "Invalid YouTube video ID"}), 400
+
+    url = f"https://music.youtube.com/watch?v={youtube_id}"
+
+    try:
+        # Use yt-dlp to download the song
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "outtmpl": f"downloads/{youtube_id}.%(ext)s",
+            "quiet": True,
+            "no_warnings": True,
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }],
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        return send_file(f"../downloads/{youtube_id}.mp3", as_attachment=True)
+    except subprocess.TimeoutExpired:
+        return jsonify({"error": "Download request timed out"}), 504
+    except subprocess.CalledProcessError:
+        return jsonify({"error": "Could not download the song"}), 502
+
+
+@main.route('/search')
+def search_music():
+    # Get the search query from the request parameters
+    query = request.args.get("q", "").strip()
+
+    if not query:
+        return jsonify({"error": "Vui lòng nhập từ khóa"}), 400
+
+    # Use yt-dlp to search for music on YouTube Music
+    options = {
+        "quiet": True,
+        "no_warnings": True,
+        "extract_flat": True,
+        "playlistend": 10,
+    }
+
+    try:
+        search_url = (
+            "https://music.youtube.com/search?q="
+            + quote(query)
+        )
+
+        with yt_dlp.YoutubeDL(options) as ydl:
+            result = ydl.extract_info(
+                search_url,
+                download=False
+            )
+
+        entries = (result or {}).get("entries") or []
+        songs = []
+
+        for item in entries:
+            if not item:
+                continue
+
+            video_id = item.get("id")
+
+            songs.append({
+                "youtubeId": video_id,
+                "title": item.get("title"),
+                "artist": (
+                    item.get("artist")
+                    or item.get("uploader")
+                    or item.get("channel")
+                ),
+                "album": item.get("album"),
+                "duration": item.get("duration"),
+                "url": (
+                    f"https://www.youtube.com/watch?v={video_id}"
+                    if video_id else None
+                )
+            })
+
+        return jsonify(songs), 200
+
+    except Exception:
+        main.logger.exception("YouTube Music search failed")
+        return jsonify({
+            "error": "Không thể tìm kiếm nhạc. Vui lòng thử lại."
+        }), 500
