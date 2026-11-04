@@ -1,9 +1,10 @@
 from flask import render_template, request, send_file
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, current_app
 from app import Song, songs
 import subprocess
 import json
 import yt_dlp
+from urllib.parse import quote
 
 main = Blueprint('main', __name__)
 
@@ -11,11 +12,6 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     return render_template('index.html', songs=songs)
-
-
-@main.route('/search')
-def search():
-    return render_template('search.html', songs=songs)
 
 
 @main.route('/songs', methods=['POST'])
@@ -31,10 +27,10 @@ def receive_songs():
 
 
 @main.route('/fetch/<youtube_id>', methods=["GET"])
-def get_song_metadata(youtube_id):
+def fetch(youtube_id):
     # Validate YouTube video ID
     if not youtube_id or len(youtube_id) != 11:
-        return jsonify({"error": "Invalid YouTube video ID"}), 400
+        return {"error": "Invalid YouTube video ID"}, 400
 
     url = f"https://music.youtube.com/watch?v={youtube_id}"
 
@@ -67,18 +63,18 @@ def get_song_metadata(youtube_id):
         if not year and len(release_date) >= 4:
             year = release_date[:4]
 
-        return jsonify({
+        return {
             "title": data.get("track") or data.get("title"),
             "artist": artist,
             "album": data.get("album"),
             "year": year,
             "duration": data.get("duration")
-        })
+        }, 200
 
     except subprocess.TimeoutExpired:
-        return jsonify({"error": "Metadata request timed out"}), 504
+        return {"error": "Metadata request timed out"}, 504
     except subprocess.CalledProcessError:
-        return jsonify({"error": "Could not retrieve YouTube metadata"}), 502
+        return {"error": "Could not retrieve YouTube metadata"}, 502
 
 
 @main.route('/download/<youtube_id>', methods=["GET"])
@@ -126,14 +122,11 @@ def search_music():
         "quiet": True,
         "no_warnings": True,
         "extract_flat": True,
-        "playlistend": 10,
+        "playlistend": 20,
     }
 
     try:
-        search_url = (
-            "https://music.youtube.com/search?q="
-            + quote(query)
-        )
+        search_url = ("https://music.youtube.com/search?q=" + quote(query))
 
         with yt_dlp.YoutubeDL(options) as ydl:
             result = ydl.extract_info(
@@ -147,29 +140,22 @@ def search_music():
         for item in entries:
             if not item:
                 continue
-
+            
             video_id = item.get("id")
+            ie_key = item.get("ie_key")
 
-            songs.append({
-                "youtubeId": video_id,
-                "title": item.get("title"),
-                "artist": (
-                    item.get("artist")
-                    or item.get("uploader")
-                    or item.get("channel")
-                ),
-                "album": item.get("album"),
-                "duration": item.get("duration"),
-                "url": (
-                    f"https://www.youtube.com/watch?v={video_id}"
-                    if video_id else None
-                )
-            })
+            if ie_key == "Youtube":
+                response, status_code = fetch(video_id)
+
+                if status_code == 200:
+                    songs.append(response)
+                else:
+                    current_app.logger.warning(f"Failed to fetch metadata for video ID: {video_id}")
 
         return jsonify(songs), 200
 
     except Exception:
-        main.logger.exception("YouTube Music search failed")
+        current_app.logger.exception("YouTube Music search failed")
         return jsonify({
             "error": "Không thể tìm kiếm nhạc. Vui lòng thử lại."
         }), 500

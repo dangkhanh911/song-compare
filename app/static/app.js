@@ -13,9 +13,7 @@ class Song {
         this.duration = "";
     }
 }
-//#endregion
 
-//#region Fetch song details from backend
 async function fetchSongDetails(song) {
     try {
         await fetch('/fetch/' + song.youtubeId, {
@@ -41,8 +39,8 @@ async function fetchSongDetails(song) {
 
 // Initialize the songs array
 let songs = [
-    new Song(0, "ON1a7XYDa1E"),
-    new Song(1, "3F9jlnANW08"),
+    new Song(0, "wgp7A9NCyE4"),
+    new Song(1, "ajhCoiKn11c"),
 ];
 
 // function sendSongsToBackend() {
@@ -89,9 +87,9 @@ function loadSongs() {
                         >
 
                         <button
-                            id="playPauseButton"
+                            id="playPauseButton-${song.index}"
                             class="play-button"
-                            onclick="togglePlayPause(this, ${song.index})"
+                            onclick="togglePlayPause(${song.index})"
                         >
                             ▶
                         </button>
@@ -250,24 +248,29 @@ function pauseSong() {
     player.pauseVideo();
 }
 
-function togglePlayPause(button, songIndex) {
+function togglePlayPause(songIndex) {
+    const button = document.getElementById(`playPauseButton-${songIndex}`);
+    const otherButton = document.getElementById(`playPauseButton-${songIndex === 0 ? 1 : 0}`);
+
+    // Toggle play/pause for the selected song and update button states
     if (button.textContent.trim() === "▶") {
         button.textContent = "⏸";
         playSong(songIndex);
-    } else {
+        if (otherButton && otherButton.textContent.trim() === "⏸") {
+            otherButton.textContent = "▶";
+        }
+    }
+    else {
         button.textContent = "▶";
         pauseSong();
     }
 
-    // if song ended, reset button text to play
     if (player) {
         player.addEventListener("onStateChange", function (event) {
             if (event.data === YT.PlayerState.ENDED) {
                 button.textContent = "▶";
             }
         });
-    } else {
-        console.error("Player is not initialized.");
     }
 }
 
