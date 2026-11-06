@@ -5,6 +5,7 @@ import subprocess
 import json
 import yt_dlp
 from urllib.parse import quote
+import datetime
 
 main = Blueprint('main', __name__)
 
@@ -12,6 +13,13 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     return render_template('index.html', songs=songs)
+    
+
+@main.route('/search_results')
+def search_results():
+    return render_template('search.html', 
+                query=request.args.get('q'), 
+                index=request.args.get('index'))
 
 
 @main.route('/songs', methods=['POST'])
@@ -68,7 +76,8 @@ def fetch(youtube_id):
             "artist": artist,
             "album": data.get("album"),
             "year": year,
-            "duration": data.get("duration")
+            # "duration": data.get("duration")
+            "duration": str(datetime.timedelta(seconds=data.get("duration", 0)))
         }, 200
 
     except subprocess.TimeoutExpired:
@@ -142,15 +151,14 @@ def search_music():
                 continue
             
             video_id = item.get("id")
-            ie_key = item.get("ie_key")
 
-            if ie_key == "Youtube":
-                response, status_code = fetch(video_id)
+            response, status_code = fetch(video_id)
 
-                if status_code == 200:
-                    songs.append(response)
-                else:
-                    current_app.logger.warning(f"Failed to fetch metadata for video ID: {video_id}")
+            if status_code == 200 and response.get("album") != None:
+                response.update({
+                    "youtubeId": video_id
+                })
+                songs.append(response)
 
         return jsonify(songs), 200
 

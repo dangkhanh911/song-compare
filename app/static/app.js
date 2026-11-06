@@ -28,36 +28,22 @@ async function fetchSongDetails(song) {
             song.artist = data.artist;
             song.album = data.album;
             song.year = data.year;
-            song.duration = new Date(data.duration * 1000).toISOString().substr(11, 8);
+            // song.duration = new Date(data.duration * 1000).toISOString().substr(11, 8);
+            song.duration = data.duration; // Assuming duration is already in a readable format
         })
     }
     catch (error) {
         console.error(`Error fetching details for song ${song.index}:`, error);
     }
 }
-//#endregion
+
 
 // Initialize the songs array
 let songs = [
     new Song(0, "wgp7A9NCyE4"),
     new Song(1, "ajhCoiKn11c"),
 ];
-
-// function sendSongsToBackend() {
-//     fetch('http://127.0.0.1:5000/songs', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(songs)
-//     })
-//     .then(response => response.json())
-//     .then(data => console.log('Response from backend:', data))
-//     .catch(error => console.error('Error:', error));
-// }
-
-// Call this function when needed, e.g., on page load or button click
-// sendSongsToBackend();
+//#endregion
 
 function loadSongs() {
     const songList = document.querySelector('.comparison'); // Get the container element
@@ -131,6 +117,96 @@ window.addEventListener("load", async function () {
     loadSongs();
 });
 
+// type search in the search box and press enter to search for a new song
+function searchSong(index) {
+    const searchInput = document.getElementById(`searchInput-${index}`);
+    const query = searchInput.value.trim();
+    let response = null;
+
+    // get the search result from the backend
+    if (query) {
+        response = fetch(`/search?q=${query}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        console.log(response);
+    }
+
+    // load the search result into the search result div
+    if (response) {
+        loadSearchResult(response, index);
+    }
+}
+
+function loadSearchResult(response, index) {
+    const searchList = document.querySelector('.search-results'); // Get the container element
+
+    // Clear previous search results
+    searchList.innerHTML = '';
+
+    response.then(res => res.json())
+        .then(data => {
+            data.forEach((result, i) => {
+                let resultDiv = document.createElement('div'); // Create a div for each search result
+
+                // Add search result details
+                resultDiv.innerHTML = `
+                    <div class="song-content">
+                        <div class="cover-wrapper">
+                            <img
+                                class="cover"
+                                src="https://img.youtube.com/vi/${result.youtubeId}/hqdefault.jpg"
+                                alt="Song cover"
+                            >
+
+                            <button
+                                id="downloadButton"
+                                class="download-button"
+                                onclick="downloadSong('${result.youtubeId}', '${result.title}', '${result.artist}')"
+                            >
+                                ⬇
+                            </button>
+                        </div>
+
+
+                        <div class="song-info">
+                            <div class="artist-label">${result.album} · ${result.year}</div>
+                            <h1>${result.title}</h1>
+                            <p class="artist">${result.artist}</p>
+
+                            <div class="song-meta">
+                                <span>◷ &nbsp;${result.duration} </span>
+                                
+                                <button class="select-button"
+                                    onclick="selectSong(${index}, ${result.youtubeId})"
+                                >
+                                    Select
+                                </button>
+                            </div>
+
+                            
+                        </div>
+                    </div>
+                `;
+
+                // Append the search result div to the container
+                searchList.appendChild(resultDiv);
+            });
+        })
+        .catch(error => {
+            console.error("Error loading search results:", error);
+        });
+}
+
+function selectSong(index, youtubeId) {
+    // Update the song in the songs array
+    songs[index].youtubeId = youtubeId;
+    loadSongs(); // Reload the songs to reflect the change
+}
+
+//#region player play, pause, and download functions
 function onYouTubeIframeAPIReady() {
     player = new YT.Player("youtube-player", {
         height: "200",
@@ -156,76 +232,6 @@ function onYouTubeIframeAPIReady() {
             }
         }
     });
-}
-
-// Search function to open a new window with the search results
-async function searchSong(songIndex) {
-    const searchInput = document.getElementById(`searchInput-${songIndex}`);
-    let query = searchInput.value.trim();
-
-    if (!query) {
-        alert("Vui lòng nhập tên bài hát");
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/search?q=${encodeURIComponent(query)}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Tìm kiếm thất bại");
-        }
-
-        console.log("Search results:", data);
-
-        // Hiển thị danh sách kết quả
-        const resultContainer = document.getElementById(
-            `results-${songIndex}`
-        );
-
-        if (!resultContainer) {
-            console.error("Không tìm thấy vùng hiển thị kết quả");
-            return;
-        }
-
-        resultContainer.innerHTML = "";
-
-        data.forEach((song) => {
-            const item = document.createElement("div");
-            item.className = "search-result";
-
-            const title = document.createElement("div");
-            title.textContent = song.title || "Không rõ tên bài hát";
-
-            const artist = document.createElement("div");
-            artist.textContent = song.artist || "Không rõ nghệ sĩ";
-
-            const chooseButton = document.createElement("button");
-            chooseButton.textContent = "Chọn bài hát";
-
-            chooseButton.addEventListener("click", () => {
-                songs[songIndex].youtubeId = song.youtubeId;
-                songs[songIndex].title = song.title || "";
-                songs[songIndex].artist = song.artist || "";
-                songs[songIndex].album = song.album || "";
-                songs[songIndex].duration = song.duration ?? "";
-
-                loadSongs();
-            });
-
-            item.append(title, artist, chooseButton);
-            resultContainer.appendChild(item);
-        });
-    } catch (error) {
-        console.error("Search error:", error);
-        alert("Không thể tìm kiếm: " + error.message);
-    }
 }
 
 // YouTube Player API functions
@@ -303,3 +309,4 @@ async function downloadSong(youtubeId, songTitle, songArtist) {
         alert("Không thể tải xuống: " + error.message);
     }
 }
+//#endregion
