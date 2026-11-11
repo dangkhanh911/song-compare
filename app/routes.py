@@ -6,9 +6,9 @@ import json
 import yt_dlp
 from urllib.parse import quote
 import datetime
+import song_analysis
 
 main = Blueprint('main', __name__)
-
 
 @main.route('/')
 def index():
@@ -30,7 +30,7 @@ def receive_songs():
     songs[0] = receive_songs[0]
     songs[1] = receive_songs[1]
 
-    print("Updated songs:", songs[0].title)
+    print("Updated songs:", songs[0].title, songs[1].title)
     return jsonify({"message": "Songs received successfully!"})
 
 
@@ -56,7 +56,7 @@ def fetch(youtube_id):
             capture_output=True,
             text=True,
             check=True,
-            timeout=10
+            timeout=45
         )
 
         # Parse the JSON output from yt-dlp
@@ -76,7 +76,6 @@ def fetch(youtube_id):
             "artist": artist,
             "album": data.get("album"),
             "year": year,
-            # "duration": data.get("duration")
             "duration": str(datetime.timedelta(seconds=data.get("duration", 0)))
         }, 200
 
@@ -84,10 +83,18 @@ def fetch(youtube_id):
         return {"error": "Metadata request timed out"}, 504
     except subprocess.CalledProcessError:
         return {"error": "Could not retrieve YouTube metadata"}, 502
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return {"error": "Internal server error"}, 500
 
 
 @main.route('/download/<youtube_id>', methods=["GET"])
 def download_song(youtube_id):
+    # If file already exists, send it directly
+    file_path = f"../downloads/{youtube_id}.mp3"
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+
     # Validate YouTube video ID
     if not youtube_id or len(youtube_id) != 11:
         return jsonify({"error": "Invalid YouTube video ID"}), 400
@@ -119,7 +126,7 @@ def download_song(youtube_id):
 
 
 @main.route('/search')
-def search_music():
+async def search_music():
     # Get the search query from the request parameters
     query = request.args.get("q", "").strip()
 
@@ -130,8 +137,8 @@ def search_music():
     options = {
         "quiet": True,
         "no_warnings": True,
-        "extract_flat": True,
-        "playlistend": 20,
+        "extract_flat": "in_playlist",  
+        "skip_download": True,         
     }
 
     try:

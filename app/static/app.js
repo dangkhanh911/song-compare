@@ -28,7 +28,6 @@ async function fetchSongDetails(song) {
             song.artist = data.artist;
             song.album = data.album;
             song.year = data.year;
-            // song.duration = new Date(data.duration * 1000).toISOString().substr(11, 8);
             song.duration = data.duration; // Assuming duration is already in a readable format
         })
     }
@@ -43,8 +42,27 @@ let songs = [
     new Song(0, "wgp7A9NCyE4"),
     new Song(1, "ajhCoiKn11c"),
 ];
+
+// Send the songs array to the backend
+function sendSongsToBackend() {
+    fetch('/songs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(songs)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Songs sent to backend:', data);
+    })
+    .catch(error => {
+        console.error('Error sending songs to backend:', error);
+    });
+}
 //#endregion
 
+//#region Load and display songs
 function loadSongs() {
     const songList = document.querySelector('.comparison'); // Get the container element
 
@@ -89,7 +107,6 @@ function loadSongs() {
                         </button>
                     </div>
 
-
                     <div class="song-info">
                         <div class="artist-label">${song.album} · ${song.year}</div>
                         <h1>${song.title}</h1>
@@ -116,7 +133,9 @@ window.addEventListener("load", async function () {
 
     loadSongs();
 });
+//#endregion
 
+//#region Search and select songs
 // type search in the search box and press enter to search for a new song
 function searchSong(index) {
     const searchInput = document.getElementById(`searchInput-${index}`);
@@ -136,16 +155,16 @@ function searchSong(index) {
 
     // load the search result into the search result div
     if (response) {
-        loadSearchResult(response, index);
+        loadSearchResult(query, response, index);
     }
 }
 
-function loadSearchResult(response, index) {
+function loadSearchResult(query, response, index) {
     const searchList = document.querySelector('.search-results'); // Get the container element
 
     // Clear previous search results
-    searchList.innerHTML = '';
-
+    searchList.innerHTML = '<h2>Search Results for "' + query + '"</h2>';
+    
     response.then(res => res.json())
         .then(data => {
             data.forEach((result, i) => {
@@ -179,14 +198,12 @@ function loadSearchResult(response, index) {
                             <div class="song-meta">
                                 <span>◷ &nbsp;${result.duration} </span>
                                 
-                                <button class="select-button"
-                                    onclick="selectSong(${index}, ${result.youtubeId})"
+                                <button class="change-btn"
+                                    onclick="selectSong(${index}, '${result.youtubeId}')"
                                 >
                                     Select
                                 </button>
                             </div>
-
-                            
                         </div>
                     </div>
                 `;
@@ -203,8 +220,22 @@ function loadSearchResult(response, index) {
 function selectSong(index, youtubeId) {
     // Update the song in the songs array
     songs[index].youtubeId = youtubeId;
-    loadSongs(); // Reload the songs to reflect the change
+    fetchSongDetails(songs[index]).then(() => {
+        // Update the song panel with the new details
+        const songPanel = document.querySelectorAll('.comparison .song-panel')[index];
+        if (songPanel) {
+            songPanel.querySelector('.cover').src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+            songPanel.querySelector('h1').textContent = songs[index].title;
+            songPanel.querySelector('.artist').textContent = songs[index].artist;
+            songPanel.querySelector('.artist-label').textContent = `${songs[index].album} · ${songs[index].year}`;
+            songPanel.querySelector('.song-meta span').textContent = `◷ ${songs[index].duration}`;
+            songPanel.querySelector(`#downloadButton`).setAttribute('onclick', `downloadSong('${youtubeId}', '${songs[index].title}', '${songs[index].artist}')`);
+            songPanel.querySelector(`#playPauseButton-${index}`).setAttribute('onclick', `togglePlayPause(${index})`);
+        }
+        pauseSong(); // Pause the current song if playing
+    });
 }
+//#endregion
 
 //#region player play, pause, and download functions
 function onYouTubeIframeAPIReady() {
