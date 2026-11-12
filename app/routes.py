@@ -1,9 +1,9 @@
 from flask import render_template, request, send_file
 from flask import Blueprint, jsonify, current_app
 from app import Song, songs
+from app.audio_files import DOWNLOADS_DIR, audio_file_path
 import subprocess
 import json
-import os
 import yt_dlp
 from urllib.parse import quote
 import datetime
@@ -34,9 +34,11 @@ def receive_songs():
     print("Updated songs:", songs[0].title, songs[1].title)
 
     for song in songs:
-        if not os.path.exists(f"../downloads/{song.youtubeId}.mp3"):
+        if not audio_file_path(song.youtubeId).is_file():
             print(f"Downloading song: {song.title} by {song.artist}")
             download_song(song.youtubeId)
+        else:
+            print(f"Song already downloaded: {song.title} by {song.artist}")
 
     json_song_0 = analyze_song(songs[0])
     json_song_1 = analyze_song(songs[1])
@@ -103,22 +105,25 @@ def fetch(youtube_id):
 
 @main.route('/download/<youtube_id>', methods=["GET"])
 def download_song(youtube_id):
-    # If file already exists, send it directly
-    file_path = f"../downloads/{youtube_id}.mp3"
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=True)
-
     # Validate YouTube video ID
     if not youtube_id or len(youtube_id) != 11:
         return jsonify({"error": "Invalid YouTube video ID"}), 400
 
+    # If file already exists, send it directly
+    file_path = audio_file_path(youtube_id)
+    if file_path.is_file():
+        print(f"File already exists: {file_path}. Sending file.")
+        return send_file(file_path, as_attachment=True)
+
     url = f"https://music.youtube.com/watch?v={youtube_id}"
 
     try:
+        DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
         # Use yt-dlp to download the song
         ydl_opts = {
             "format": "bestaudio/best",
-            "outtmpl": f"downloads/{youtube_id}.%(ext)s",
+            "outtmpl": str(DOWNLOADS_DIR / f"{youtube_id}.%(ext)s"),
             "quiet": True,
             "no_warnings": True,
             "postprocessors": [{
@@ -131,7 +136,7 @@ def download_song(youtube_id):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        return send_file(f"../downloads/{youtube_id}.mp3", as_attachment=True)
+        return send_file(file_path, as_attachment=True)
     except subprocess.TimeoutExpired:
         return jsonify({"error": "Download request timed out"}), 504
     except subprocess.CalledProcessError:

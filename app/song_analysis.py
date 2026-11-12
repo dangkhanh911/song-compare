@@ -1,9 +1,10 @@
 from app import Song, songs
+from app.audio_files import audio_file_path
 import librosa
 
 def analyze_song(song):
     # Load the audio file using librosa
-    y, sr = librosa.load(f"../downloads/{song.youtubeId}.mp3", sr=None)
+    y, sr = librosa.load(audio_file_path(song.youtubeId), sr=None)
 
     # Extract features
     tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
