@@ -3,10 +3,11 @@ from flask import Blueprint, jsonify, current_app
 from app import Song, songs
 import subprocess
 import json
+import os
 import yt_dlp
 from urllib.parse import quote
 import datetime
-import song_analysis
+from app.song_analysis import analyze_song
 
 main = Blueprint('main', __name__)
 
@@ -31,6 +32,18 @@ def receive_songs():
     songs[1] = receive_songs[1]
 
     print("Updated songs:", songs[0].title, songs[1].title)
+
+    for song in songs:
+        if not os.path.exists(f"../downloads/{song.youtubeId}.mp3"):
+            print(f"Downloading song: {song.title} by {song.artist}")
+            download_song(song.youtubeId)
+
+    json_song_0 = analyze_song(songs[0])
+    json_song_1 = analyze_song(songs[1])
+
+    print(json_song_0)
+    print(json_song_1)
+
     return jsonify({"message": "Songs received successfully!"})
 
 
@@ -126,7 +139,7 @@ def download_song(youtube_id):
 
 
 @main.route('/search')
-async def search_music():
+def search_music():
     # Get the search query from the request parameters
     query = request.args.get("q", "").strip()
 

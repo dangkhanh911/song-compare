@@ -189,7 +189,6 @@ function loadSearchResult(query, response, index) {
                             </button>
                         </div>
 
-
                         <div class="song-info">
                             <div class="artist-label">${result.album} · ${result.year}</div>
                             <h1>${result.title}</h1>
@@ -219,6 +218,10 @@ function loadSearchResult(query, response, index) {
 
 function selectSong(index, youtubeId) {
     // Update the song in the songs array
+    if (player && player.getVideoData().video_id === songs[index].youtubeId) {
+        pauseSong();
+    }
+
     songs[index].youtubeId = youtubeId;
     fetchSongDetails(songs[index]).then(() => {
         // Update the song panel with the new details
@@ -231,8 +234,8 @@ function selectSong(index, youtubeId) {
             songPanel.querySelector('.song-meta span').textContent = `◷ ${songs[index].duration}`;
             songPanel.querySelector(`#downloadButton`).setAttribute('onclick', `downloadSong('${youtubeId}', '${songs[index].title}', '${songs[index].artist}')`);
             songPanel.querySelector(`#playPauseButton-${index}`).setAttribute('onclick', `togglePlayPause(${index})`);
+            songPanel.querySelector(`#playPauseButton-${index}`).textContent = "▶"; // Reset play button to play state
         }
-        pauseSong(); // Pause the current song if playing
     });
 }
 //#endregion
