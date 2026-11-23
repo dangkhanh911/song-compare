@@ -176,7 +176,6 @@ def search_music():
                 continue
             
             video_id = item.get("id")
-
             response, status_code = fetch(video_id)
 
             if status_code == 200 and response.get("album") != None:

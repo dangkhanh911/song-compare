@@ -35,8 +35,9 @@ async function fetchSongDetails(song) {
         console.error(`Error fetching details for song ${song.index}:`, error);
     }
 }
+//#endregion
 
-
+//#region Send songs to backend and show comparison
 // Initialize the songs array
 let songs = [
     new Song(0, "wgp7A9NCyE4"),
@@ -45,7 +46,7 @@ let songs = [
 
 // Send the songs array to the backend
 function sendSongsToBackend() {
-    fetch('/songs', {
+    let response = fetch('/songs', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -59,6 +60,37 @@ function sendSongsToBackend() {
     .catch(error => {
         console.error('Error sending songs to backend:', error);
     });
+
+    if (response) {
+        showComparison();
+    }
+}
+
+function showComparison(response) {
+    const comparisonDiv = document.querySelector('.match-summary');
+    
+    comparisonDiv.innerHTML = ``;
+
+    response.then(res => res.json())
+        .then(data => {
+            data.forEach((item, i) => {
+                let itemDiv = document.createElement('div'); // Create a div for each comparison item
+
+                // Add comparison item details
+                itemDiv.innerHTML = `
+                    <div class="song-content">
+                        <i>${item.tempo}</i>
+                        <h1>${item.title}</h1>
+                    </div>
+                `;
+
+                // Append the comparison item div to the container
+                comparisonDiv.appendChild(itemDiv);
+            });
+        })
+        .catch(error => {
+            console.error("Error loading comparison data:", error);
+        });
 }
 //#endregion
 
@@ -163,10 +195,12 @@ function loadSearchResult(query, response, index) {
     const searchList = document.querySelector('.search-results'); // Get the container element
 
     // Clear previous search results
-    searchList.innerHTML = '<h2>Search Results for "' + query + '"</h2>';
+    searchList.innerHTML = '';
     
     response.then(res => res.json())
         .then(data => {
+            searchList.innerHTML = '<h2>Search Results for "' + query + '"</h2>'
+
             data.forEach((result, i) => {
                 let resultDiv = document.createElement('div'); // Create a div for each search result
 
